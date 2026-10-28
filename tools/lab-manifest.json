@@ -1,0 +1,37 @@
+{
+  "pages": [
+    "index.html",
+    "match.html",
+    "style.css",
+    "config.js",
+    "data.js",
+    "profile.js",
+    "pc-desktop.js",
+    "pc-base.css",
+    "pc-lab.js",
+    "pc-lab.css",
+    "tv-view.js",
+    "tv-view.css",
+    "pc-lab-feature-icons.js",
+    "pc-lab-feature-icons.svg",
+    "pc-voice.js",
+    "pc-voice-diagnostics.js",
+    "lab-storage.js",
+    "lab-tools.js",
+    "lab-entry.js",
+    "lab-sample-events.js",
+    "assets/pulse-echo-icon.png"
+  ],
+  "source": [
+    "README.md",
+    "LABO-PREPARATION.md",
+    ".gitignore",
+    ".github/workflows/lab-pages.yml",
+    "tools/lab-manifest.json",
+    "tools/prepare-pages.py",
+    "tools/prepare-repository.py",
+    "tools/audit-bundle.py",
+    "tests/lab-independent.cjs",
+    "tests/lab-storage.cjs"
+  ]
+}

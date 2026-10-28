@@ -1,0 +1,188 @@
+/* All experimental controls are opt-in; TV never shows LAB controls. */
+#labTacticsExit[hidden]{display:none!important}
+body.tv-mode.lab-mode #labTacticsExit:not([hidden]){position:fixed;right:16px;bottom:16px;z-index:150;display:flex;min-height:44px;background:rgba(8,10,16,.9);border:1px solid var(--cyan);box-shadow:0 3px 15px #0008}
+.lab-entry,.lab-only{display:none}
+@media(min-width:901px){.lab-entry{display:inline-flex;padding:7px 12px;font-size:.8rem}}
+body.tv-mode.lab-mode .lab-only{display:flex}
+body.tv-mode.lab-mode #labControls{position:fixed;left:12px;top:12px;right:12px;z-index:80;align-items:center;gap:8px;flex-wrap:wrap;pointer-events:none}
+body.tv-mode.lab-mode #labControls>*{pointer-events:auto;background:rgba(8,10,16,.85)}
+body.tv-mode.lab-mode #labControls strong{padding:8px}
+body.tv-mode.lab-mode #tvMapDock{position:fixed;inset:auto;transform:none;display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:12px;pointer-events:auto;background:rgba(8,10,16,.78);z-index:70;overflow:visible;min-width:0;min-height:0}
+body.tv-mode.lab-mode #tvMapDock[hidden]{display:none!important}
+body.tv-mode.lab-mode #labMapHandle{flex:0 0 30px;align-items:center;font-size:13px;font-weight:900;cursor:grab;touch-action:none;user-select:none;border-bottom:1px solid #566074}
+body.tv-mode.lab-mode #labMapHandle{flex-direction:column;align-items:flex-start;justify-content:center;gap:1px}
+body.tv-mode.lab-mode #labMapHandle small{font-size:11px;font-weight:600;color:#b8c1d2;line-height:1.2}
+body.tv-mode.lab-mode #tvMapDock .lab-grip-line{width:100%;min-width:0}
+body.tv-mode.lab-mode #tvMapDock .lab-pulse-playback{display:flex;align-items:center;gap:6px;margin-left:auto;white-space:nowrap}
+body.tv-mode.lab-mode #tvMapDock .lab-pulse-play-button{display:inline-flex;align-items:center;justify-content:center;width:28px;min-width:28px;height:24px;min-height:24px;padding:0;border:1px solid #8994ab;border-radius:5px;background:#253047;color:#fff;font-size:13px;line-height:1;cursor:pointer}
+body.tv-mode.lab-mode #tvMapDock .lab-pulse-clock{min-width:78px;color:#fff;font-size:12px;font-variant-numeric:tabular-nums;text-align:right}
+body.tv-mode.lab-mode #tvMapDock .lab-playhead{position:absolute;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 3px #000;pointer-events:none;z-index:3}
+body.tv-mode.lab-mode #tvMapDock .lab-playhead[hidden]{display:none!important}
+body.tv-mode.lab-mode #tvMapDock .lab-playhead-knob{position:absolute;left:50%;top:0;transform:translate(-50%,-50%);width:12px;min-width:12px;height:12px;min-height:12px;padding:0;border:2px solid #fff;border-radius:50%;background:#182033;box-shadow:0 0 3px #000;pointer-events:auto;cursor:ew-resize;touch-action:none}
+body.tv-mode.lab-mode #tvMapDock .lab-playhead-knob:focus-visible{outline:2px solid #00cec9;outline-offset:2px}
+body.tv-mode.lab-mode #tvMapDock .lab-hover-line{position:absolute;width:1px;margin-left:-.5px;background:rgba(255,255,255,.38);pointer-events:none;z-index:2}
+body.tv-mode.lab-mode #tvMapDock .lab-hover-line[hidden]{display:none!important}
+body.tv-mode.lab-mode #tvMapDock .tv-reactions{flex:0 0 auto;width:100%;margin:0;gap:5px}
+body.tv-mode.lab-mode #tvMapDock #tvNameOpen{flex-basis:88px;width:88px;min-height:40px;font-size:12px}
+body.tv-mode.lab-mode #tvMapDock .tv-react{font-size:12px;padding:4px;min-height:40px}
+body.tv-mode.lab-mode #tvMapDock .heatmap{flex:1 1 0;height:auto;min-height:50px;position:relative}
+body.tv-mode.lab-mode #tvMapDock canvas{max-height:none!important;width:100%!important;height:100%!important}
+body.tv-mode.lab-mode #labMapResize{position:absolute;right:0;bottom:0;width:26px;height:26px;border:1px solid #aaa;border-radius:6px;background:#202636;color:#fff;cursor:nwse-resize;touch-action:none;align-items:center;justify-content:center;z-index:4}
+body.tv-mode.lab-mode .comment-overlay{bottom:0}
+#labTooltip{position:fixed;z-index:100;pointer-events:none;max-width:min(320px,calc(100vw - 16px));max-height:calc(100dvh - 16px);overflow:auto;padding:12px;background:rgba(8,10,16,.97);color:#fff;border:1px solid #8994ab;border-radius:10px;font-size:13px;overflow-wrap:anywhere;box-shadow:0 6px 22px #0008}
+#labTooltip[hidden]{display:none!important}
+body:not(.lab-mode) #labTooltip{display:none!important}
+#labTooltip>div{margin-top:6px}
+#labTooltip>.lab-tooltip-range{display:block;margin-top:2px;color:#aab4c7;font-size:11px;line-height:1.3}
+
+/* Full overlay prototype: only explicit LAB mode moves these original controls. */
+body.tv-mode.lab-mode main .container,body.tv-mode.lab-mode .viewer-layout,body.tv-mode.lab-mode .viewer-card{width:100%;max-width:none;margin:0}
+body.tv-mode.lab-mode .video-shell{width:min(100vw,calc(100dvh * 16 / 9));height:auto;aspect-ratio:16/9;max-width:none}
+body.tv-mode.lab-mode #labControls{max-height:25dvh;overflow:auto;padding:4px;background:rgba(8,10,16,.45);border-radius:10px;pointer-events:auto}
+body.tv-mode.lab-mode .lab-panel{position:fixed;display:flex;flex-direction:column;padding:8px;background:rgba(8,10,16,.72);border:1px solid #778098;border-radius:12px;z-index:71;min-width:0;min-height:0;box-sizing:border-box;color:#fff}
+body.tv-mode.lab-mode .lab-panel[hidden]{display:none!important}
+.lab-panel-grip{flex:0 0 30px;cursor:grab;touch-action:none;user-select:none;font-size:13px;border-bottom:1px solid #778098;padding:4px}
+.lab-panel-grip:hover{cursor:move}
+body.tv-mode.lab-mode #labMapHandle:hover{cursor:move}
+.lab-grip-mark{display:inline-flex;align-items:center;justify-content:center;flex:0 0 16px;width:16px;font-size:18px;line-height:1;color:#d8dfec;cursor:move}
+.lab-panel-content{flex:1;min-height:0;overflow:auto;padding:8px 0 22px;overscroll-behavior:contain}
+.lab-panel-resize{position:absolute;right:2px;bottom:2px;width:30px;height:30px;cursor:nwse-resize;touch-action:none;background:#253047;color:white;border:1px solid #8994ab;border-radius:5px}
+body.tv-mode.lab-mode .lab-panel .controls,body.tv-mode.lab-mode .lab-panel .timeline-card{display:block!important;margin:0;padding:0;border:0;background:transparent;min-width:0}
+body.tv-mode.lab-mode .lab-panel .inputs{display:flex;flex-wrap:wrap;gap:8px}
+body.tv-mode.lab-mode .lab-panel .inputs input{width:100%;min-width:0;flex:1 1 140px}
+body.tv-mode.lab-mode .lab-panel .inputs #commentText{flex-basis:220px}
+body.tv-mode.lab-mode .lab-panel .btn,body.tv-mode.lab-mode .lab-panel .react{white-space:normal;overflow-wrap:anywhere;min-height:40px}
+body.tv-mode.lab-mode .lab-panel .reactions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+body.tv-mode.lab-mode .lab-panel .timeline{max-height:none;overflow:visible}
+body.tv-mode.lab-mode .lab-panel .event{overflow-wrap:anywhere}
+body.tv-mode.lab-mode.tactics-open .lab-panel .inputs,body.tv-mode.lab-mode.tactics-open .lab-panel .reactions{display:none}
+.lab-panel-grip:focus-visible,.lab-panel-resize:focus-visible{outline:3px solid #00cec9}
+.lab-panel-grip{display:flex;flex-direction:column;justify-content:center;gap:1px;flex-basis:42px;line-height:1.2}
+.lab-panel-grip small{font-size:11px;font-weight:600;color:#b8c1d2}
+
+/* Review fix: menu is an overlay, never a reserved band for panel movement. */
+body.tv-mode.lab-mode #labMenuToggle{position:fixed;left:8px;top:8px;z-index:82;display:block;min-height:36px;padding:6px 10px;background:rgba(8,10,16,.7)}
+body.tv-mode.lab-mode #labControls{left:8px;right:auto;top:52px;max-width:calc(100vw - 16px);max-height:35dvh;z-index:81}
+body.tv-mode.lab-mode #labControls.is-collapsed{display:none}
+#labReturn[hidden]{display:none!important}
+body.tv-mode:not(.lab-mode) #labReturn:not([hidden]){display:block;position:fixed;left:8px;top:8px;z-index:82;min-height:40px;background:rgba(8,10,16,.75)}
+body:not(.tv-mode) #labReturn,body.lab-mode #labReturn{display:none}
+
+/* LAB v2: background alpha only, never opacity on text or controls. */
+body.tv-mode.lab-mode .lab-panel,body.tv-mode.lab-mode #tvMapDock{background:rgba(8,10,16,var(--lab-bg-alpha,.28));box-sizing:border-box}
+body.tv-mode.lab-mode #labControls{max-width:min(620px,calc(100vw - 16px));max-height:65dvh;background:rgba(8,10,16,.94)}
+.lab-opacity{display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;font-size:13px;color:#fff;padding:4px 8px}
+.lab-opacity input{min-width:100px;flex:1;max-width:240px}.lab-opacity output{min-width:42px}
+#labStorageNotice{font-size:13px;color:#ffdc91}
+body.tv-mode.lab-mode #labClearAll{display:block;position:fixed;right:8px;top:8px;bottom:auto;z-index:110;padding:6px 10px;font-size:12px;min-height:32px;background:rgba(8,10,16,.7)}
+body.tv-mode.lab-mode.lab-clean #tvMapDock,body.tv-mode.lab-mode.lab-clean .lab-panel,
+body.tv-mode.lab-mode.lab-clean #labControls,body.tv-mode.lab-mode.lab-clean #labMenuToggle,
+body.tv-mode.lab-mode.lab-clean #labTooltip,body.tv-mode.lab-mode.lab-clean .comment-overlay,
+body.tv-mode.lab-mode.lab-clean .tactical-layer,body.tv-mode.lab-mode.lab-clean .tv-toolbar{display:none!important}
+#labCleanMic[hidden]{display:none!important}
+body.tv-mode.lab-mode #labCleanMic{position:fixed;right:16px;bottom:72px;z-index:130;display:none;place-items:center;width:42px;height:42px;min-width:42px;min-height:42px;padding:0;border:1px solid rgba(255,255,255,.58);border-radius:50%;background:rgba(8,10,16,.58);color:#fff;font-size:21px;line-height:1;opacity:.78;box-shadow:0 2px 10px rgba(0,0,0,.24);cursor:pointer;pointer-events:auto}
+body.tv-mode.lab-mode.lab-clean #labCleanMic:not([hidden]){display:grid}
+body.tv-mode.lab-mode.lab-clean #labCleanMic.is-flashing{animation:lab-clean-mic-flash .85s ease-out}
+@keyframes lab-clean-mic-flash{0%{background:rgba(0,206,201,.98);box-shadow:0 0 0 0 rgba(0,230,208,.9),0 0 24px rgba(0,230,208,.95);opacity:1;transform:scale(1.12)}100%{background:rgba(8,10,16,.58);box-shadow:0 2px 10px rgba(0,0,0,.24);opacity:.78;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){body.tv-mode.lab-mode.lab-clean #labCleanMic.is-flashing{animation:none;background:rgba(0,206,201,.96);opacity:1}}
+body.tv-mode.lab-mode #tvMapDock{overflow:auto}
+
+/* Foundation: LAB-only labels and panel-width-aware detail choices. */
+body.tv-mode.lab-mode .lab-panel .react,body.tv-mode.lab-mode .lab-panel .nice-chip,body.tv-mode.lab-mode #tvMapDock .tv-react{white-space:nowrap;overflow-wrap:normal;word-break:normal}
+body.tv-mode.lab-mode .lab-panel .nice-options{grid-template-columns:repeat(auto-fit,minmax(min(100%,120px),1fr))}
+body.tv-mode.lab-mode #tvMapDock .tv-reactions{flex-wrap:wrap}
+body.tv-mode.lab-mode #tvMapDock .tv-react{flex:0 0 112px;width:112px}
+
+/* C prototype, scoped to LAB: original buttons move to one fixed-size bar. */
+body.tv-mode.lab-mode #tvMapDock .tv-reactions{display:none}
+body.tv-mode.lab-mode #labPosting .reactions{display:none!important}
+body.tv-mode.lab-mode #labPosting .utility-actions{grid-template-columns:1fr}
+body.tv-mode.lab-mode .lab-reaction-bar .lab-panel-grip{flex-basis:42px}
+body.tv-mode.lab-mode .lab-reaction-bar .lab-panel-content{padding:4px 0;overflow:auto}
+body.tv-mode.lab-mode .lab-reaction-source{display:flex;flex-wrap:wrap;align-content:start;gap:6px}
+body.tv-mode.lab-mode .lab-reaction-source .react{flex:0 0 112px;width:112px;height:40px;min-height:40px;padding:4px;font-size:12px}
+body.tv-mode.lab-mode #labReactions #tvNameOpen{flex:0 0 88px;width:88px;max-width:88px;height:40px;min-height:40px;padding:4px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:8px}
+#labNicePopup[hidden]{display:none!important}
+body.tv-mode.lab-mode #labNicePopup{display:block;position:fixed;z-index:120;max-height:calc(100dvh - 16px);overflow:auto;padding:8px;box-sizing:border-box;border:1px solid #ff4757;border-radius:10px;background:rgba(8,10,16,.96)}
+body.tv-mode.lab-mode #labNicePopup .nice-options{grid-template-columns:repeat(auto-fit,minmax(min(100%,120px),1fr))}
+body.tv-mode.lab-mode #labNicePopup .nice-chip{white-space:nowrap;overflow-wrap:normal;word-break:normal}
+body.tv-mode.lab-mode #tvNamePanel{z-index:150}
+body.tv-mode.lab-mode.lab-clean #labNicePopup{display:none!important}
+
+/* LAB-only docking and background alpha: text/buttons remain opaque. */
+body.tv-mode.lab-mode #labControls{background:rgba(8,10,16,.25)}
+body.tv-mode.lab-mode #labTimeline .event{background:rgba(24,28,39,var(--lab-bg-alpha,.28));color:#fff;text-shadow:0 1px 3px #000,0 0 3px #000}
+body.pc-default.tv-mode.lab-mode #labTimeline .event-meta{display:flex;align-items:center;gap:7px;flex:0 0 auto;white-space:nowrap}
+body.pc-default.tv-mode.lab-mode #labTimeline .event-date{display:inline-block;color:#9aa3b4;font-size:10px;font-weight:500;line-height:1.2}
+body.tv-mode.lab-mode #labTimeline .event-comment{color:#fff}
+body.tv-mode.lab-mode #labTimeline .event-review{background:#123c40}
+body.tv-mode.lab-mode #labTimeline .event-delete{background:#492229}
+body.tv-mode.lab-mode #tvMapDock.lab-dock-candidate{outline:3px solid #00e6d0;outline-offset:2px}
+body.tv-mode.lab-mode #tvMapDock.lab-dock-candidate::after{content:'離すと合体';position:absolute;right:8px;bottom:4px;background:#073c3a;color:#fff;padding:4px 8px;border-radius:6px;pointer-events:none;z-index:5}
+body.tv-mode.lab-mode #tvMapDock.lab-map-docked{border-bottom-left-radius:0;border-bottom-right-radius:0}
+body.tv-mode.lab-mode #labReactions.lab-bar-docked{border-top-left-radius:0;border-top-right-radius:0}
+body.tv-mode.lab-mode #labUndock{position:absolute;right:8px;top:3px;min-height:24px;height:24px;font-size:12px;padding:2px 8px}
+#labUndock[hidden]{display:none!important}
+body.tv-mode.lab-mode #labControls button{background:#151b27;opacity:1}
+
+/* PC LAB prototype panels and names. */
+body.tv-mode.lab-mode #labPosting .lab-panel-content{overflow:hidden;padding:8px 0 0}
+body.tv-mode.lab-mode #labPosting .inputs{grid-template-columns:minmax(0,1fr) auto}
+body.tv-mode.lab-mode #labPosting .inputs #commentText{flex:1 1 180px;min-width:0}
+body.tv-mode.lab-mode #labPosting .inputs #echoNameInput{display:none!important}
+body.tv-mode.lab-mode #labReactions .lab-panel-content{overflow:hidden;padding:4px 0 0}
+body.tv-mode.lab-mode .lab-reaction-source{flex-wrap:nowrap;justify-content:flex-start}
+body.tv-mode.lab-mode .lab-reaction-source .react{flex-basis:100px;width:100px;flex-shrink:0}
+body.tv-mode.lab-mode #labReactions #tvNameOpen{flex:0 1 170px;width:170px;max-width:170px;min-width:112px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;justify-content:flex-start}
+body.tv-mode.lab-mode #labTimeline .timeline-title,body.tv-mode.lab-mode #tvMapDock .heat-title{display:none!important}
+body.tv-mode.lab-mode #labMatchLog .lab-panel-content{box-sizing:border-box;overflow:auto;padding:7px 36px 38px 0}
+body.tv-mode.lab-mode #labMatchLog .lab-goal-log{display:block!important}
+.lab-goal-warning{font-size:10px;color:#ffcf86;margin:0 0 6px}
+.lab-goal-list{display:flex;flex-direction:column;gap:5px}
+.lab-goal-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:7px;min-height:34px;padding:4px 7px;border:1px solid #30394b;border-left:5px solid var(--goal-color);border-radius:8px;background:rgba(24,28,39,.88);font-size:12px;white-space:nowrap;overflow:hidden}
+.lab-goal-row strong{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.lab-goal-row span{font-weight:850}.lab-goal-row b{font-size:14px;min-width:34px;text-align:right}
+#pcDevicePreview[hidden]{display:none!important}
+body.tv-mode.lab-mode #pcDevicePreview{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.82);padding:12px;box-sizing:border-box}
+.pc-preview-top{display:flex;justify-content:space-between;align-items:center;gap:12px;width:min(100%,calc(100vw - 32px));margin-bottom:8px}
+.pc-preview-stage{position:relative;overflow:hidden;border:2px solid #00d9d2;border-radius:8px;background:#000;box-shadow:0 10px 40px #000a}
+.pc-preview-scale{position:absolute;left:0;top:0;transform-origin:top left}
+.pc-preview-scale iframe{display:block;border:0;background:#000}
+.pc-preview-warning,.pc-screen-info{font-size:11px;line-height:1.5;color:#b7c1d3;margin:4px 0 8px}
+#pcDevicePreviewSettings .input{width:100%;margin-bottom:6px;padding:7px}
+#pcDevicePreviewSettings .btn{width:100%}
+
+/* PC default entry; legacy remains available through the explicit review URL. */
+body.lab-mode #labToReview{display:none!important}
+/* After LAB canvas restoration, prevent intrinsic canvas width from enlarging
+   the legacy desktop grid. Scoped to identified desktops outside TV/LAB. */
+body.pc-default:not(.tv-mode) .viewer-card,
+body.pc-default:not(.tv-mode) .side-stack,
+body.pc-default:not(.tv-mode) .heatmap{min-width:0;max-width:100%}
+body.pc-default:not(.tv-mode) .heatmap canvas{max-width:100%}
+
+/* Standard PC menu. Other devices and the TV presentation retain their UI. */
+#pcPulseMenu{display:none}
+body.pc-default.tv-mode.lab-mode #pcPulseMenu{display:block;position:fixed;left:8px;top:8px;z-index:85;max-width:calc(100vw - 16px)}
+body.pc-default.tv-mode.lab-mode #pcPulseMenu #labMenuToggle{display:flex!important;position:relative;inset:auto;align-items:center;gap:9px;max-width:calc(100vw - 16px);min-height:44px;padding:5px 10px;white-space:nowrap;background:rgba(8,10,16,.78);cursor:grab;touch-action:none;user-select:none}
+body.pc-default.tv-mode.lab-mode #pcPulseMenu #labMenuToggle:active{cursor:grabbing}
+#pcPulseMenu #labMenuToggle img{width:32px;height:32px;flex:0 0 32px;object-fit:contain;border-radius:8px;pointer-events:none}
+#pcPulseMenu #labMenuToggle span:last-child{margin-left:6px;font-size:20px}
+body.pc-default.tv-mode.lab-mode #pcPulseMenu #labControls{display:block!important;position:absolute;right:auto;max-width:calc(100vw - 16px);box-sizing:border-box;overflow:auto;padding:10px;border:1px solid #657087;border-radius:10px;background:rgba(8,10,16,.86);overscroll-behavior:contain;pointer-events:auto}
+body.pc-default.tv-mode.lab-mode #pcPulseMenu #labControls.is-collapsed{display:none!important}
+#pcPulseMenu #labControls>section{background:transparent;padding:0}
+#pcPulseMenu #labControls section+section{border-top:1px solid #657087;margin-top:10px;padding-top:8px}
+#pcPulseMenu h2{font-size:13px;line-height:1.4;margin:0 0 7px;color:#d8dfec}
+#pcPulseMenu .pc-menu-modes,#pcPulseMenu .pc-menu-visibility{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+body.pc-default.tv-mode.lab-mode #pcPulseMenu .btn{min-height:36px;padding:7px 9px;font-size:12px;line-height:1.3;white-space:normal;overflow-wrap:break-word}
+body.pc-default.tv-mode.lab-mode #pcPulseMenu .btn[aria-pressed=true]{border-color:#00cec9;box-shadow:inset 0 0 0 1px #00cec9}
+body.pc-default.tv-mode.lab-mode #pcPulseMenu #labClearAll{display:block;position:static;inset:auto;min-height:36px;font-size:12px}
+#pcPulseMenu .lab-opacity{box-sizing:border-box;padding:5px 0;gap:6px;line-height:1.5}
+#pcPulseMenu .lab-opacity input{max-width:none;min-width:80px;width:100px}
+#pcPulseMenu .lab-video-choice{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px}
+#pcPulseMenu .lab-video-choice select{flex:1;min-width:0;width:100%;max-width:100%;padding:6px}
+#pcPulseMenu #labStorageNotice{display:block;margin-top:6px}
+#pcPulseMenu #labMenuToggle:focus-visible{outline:3px solid #00cec9;outline-offset:2px}
+#pcPulseMenu #pcOpacitySettings{margin:8px 0}
+#pcPulseMenu #pcOpacitySettings summary{cursor:pointer;padding:8px 4px;font-size:13px;color:#fff}
+#pcPulseMenu #pcOpacitySettings summary:focus-visible{outline:2px solid #00cec9;border-radius:4px}
