@@ -123,9 +123,10 @@
   if(!active()||labDrag)return;
   const point=labPointAtEvent(event,true);labHoverSeconds=point?.seconds??null;
   const area=chart?.chartArea,rect=labCanvas.getBoundingClientRect(),chartX=labHoverSeconds===null?null:labSecondsToChartX(labHoverSeconds);
-  if(chartX===null||!area||rect.width<=0||chart?.width<=0){labHoverLine.hidden=true;return}
+  if(chartX===null||!area||rect.width<=0||chart?.width<=0){labHoverLine.hidden=true;tip.hidden=true;return}
   const dockPoint=labChartPointToDock(chartX,area.top),sy=rect.height/chart.height;
   labHoverLine.style.left=`${dockPoint.left}px`;labHoverLine.style.top=`${dockPoint.top}px`;labHoverLine.style.height=`${Math.max(0,(area.bottom-area.top)*sy)}px`;labHoverLine.hidden=false;
+  if(chart.tooltip?.opacity>0)tooltip({chart,tooltip:chart.tooltip});
  },true);
  // Move the original elements, preserving their input state and event handlers.
  const panels=[];
@@ -268,13 +269,11 @@
   const graphTop=r.top+area.top*scaleY,top=graphTop-t.height-8;
   tip.style.left=left+"px";tip.style.top=top+"px";
  }
- if(window.Chart)Chart.register({id:"pulsePcLab",beforeUpdate(instance){
-  if(instance.canvas.id!=="chart")return;
-  const lab=active();instance.options.maintainAspectRatio=!lab;
-  if(instance.options.scales?.x&&lab)instance.options.scales.x.offset=false;
-  instance.options.plugins.tooltip.enabled=!lab;instance.options.plugins.tooltip.external=lab?tooltip:null;
-  instance.options.plugins.tooltip.mode=lab?"index":"nearest";instance.options.plugins.tooltip.intersect=!lab;
- }});
+ // Configure before Chart constructs its plugin option descriptors.
+ window.PULSE_PC_CHART_OPTIONS=options=>{
+  const lab=active();options.maintainAspectRatio=!lab;
+  options.plugins.tooltip={enabled:!lab,external:lab?tooltip:null,mode:lab?"index":"nearest",intersect:!lab};
+ };
  document.getElementById("chart").addEventListener("mouseleave",()=>{tip.hidden=true;labHoverSeconds=null;labHoverLine.hidden=true});
  document.addEventListener("pulse-view-mode",()=>{
   if(typeof chart==="undefined"||!chart||typeof draw!=="function"||!Array.isArray(events))return;

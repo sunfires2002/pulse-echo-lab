@@ -32,6 +32,7 @@
     "tools/prepare-repository.py",
     "tools/audit-bundle.py",
     "tests/lab-independent.cjs",
-    "tests/lab-storage.cjs"
+    "tests/lab-storage.cjs",
+    "tests/pulse-seconds.cjs"
   ]
 }
