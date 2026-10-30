@@ -43,6 +43,7 @@
     "tests/goal-flags.cjs",
     "tests/goals-youtube.cjs",
     "GOAL-LANE.md",
-    "tests/goal-lane.cjs"
+    "tests/goal-lane.cjs",
+    "tests/goal-hover.cjs"
   ]
 }

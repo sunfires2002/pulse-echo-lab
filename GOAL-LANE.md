@@ -2,6 +2,20 @@
 
 Base: independent LABO main `db6a18f`. Branch: `codex/labo-goal-lane`. This supersedes the floating GOAL detail layout described in GOAL-FLAGS.md. No main merge or publication.
 
+## GOAL ball interaction update (2026-10-30 candidate)
+
+Base: published LABO main `4fe2009`. Branch: `codex/labo-goal-ball`. This section supersedes the flag appearance and persistent-detail behavior below; the measured panel/chart dimensions are unchanged. No main merge or deployment in this task.
+
+- Balls use the requested `⚽` character, 18px type in a24×20px button within the existing20px lane. Native OS emoji rendering is retained. The nearby badge and exact per-goal seconds positions remain; the24px nearby threshold matches the larger target width.
+- A thin yellow dashed, pointer-transparent guide runs from the plot top to the lane center. It uses the existing `timeline.point(sec)`/Chart.js seconds position, with the canvas CSS scale and live panel/lane rectangles for vertical placement. It follows move/resize/dock. The white playhead and its knob are unchanged.
+- Pointer hover changes details immediately. Leaving both the balls and detail area closes after260ms. Entering details cancels closure, so their separate near-goal buttons remain usable. Focusing the same ball no longer rebuilds its details unnecessarily.
+- Keyboard focus inside the lane/details retains the selection; Escape or leaving focus closes it. Touch selection stays available for tapping an individual nearby goal, and tapping elsewhere on the page closes it. Browser-level touch emulation was enabled after PC startup to test a touch-capable PC without changing existing mobile routing.
+- Focusing/hovering an individual detail row positions the guide at that goal. No native title or floating GOAL popup is introduced. No selected/imported goal state is persisted. Context changes and stale-button validation remain unchanged.
+
+`tests/goal-hover.cjs` covers all3 sizes: hover switch, leave, transition into details, mouse click then leave, keyboard retention/Tab/Enter/Escape, guide x/top/end coordinates, resize/move and stale-button rejection. It also tests Chrome touch events for ball selection, nearby row tap and outside dismissal. `tests/goal-lane.cjs` retains none/one/multiple/nearby/long-name/minimum-size/dock/reload/split/legacy-key checks. `tests/goals-youtube.cjs` passes on actual1389/1641/3678-second videos with decimal API seek targets. Existing PULSE, schema and storage suites pass. Dedicated hover/lane HTTP and WebSocket Supabase capture lists and page-error lists are empty.
+
+Evidence is stored outside the repository in `goal-ball-review/`: hover, lane, real and pulse results/screenshots. Checks are Chrome browser/emulation evidence, not physical devices or cross-OS emoji proof. YouTube seeking is API-based, not frame-accurate. Production PULSE ECHO, PRISM CUT, Sports Score Camera and Supabase are unchanged. Cache keys: goals JS/CSS1.2.0, desktop loader1.2.4.
+
 ## Measurement and height decision
 
 All values below are CSS pixels, measured in real Chrome. The previous canvas including its time axis was 48px high, with a 19px reaction plot. The remaining empty space was below that canvas inside `.heatmap`.
