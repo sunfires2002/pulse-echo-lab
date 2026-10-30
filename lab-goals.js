@@ -33,7 +33,10 @@
   const nearby=buttons.filter(b=>Math.abs(b.node.getBoundingClientRect().x-x)<22);
   const heading=document.createElement('strong');heading.textContent=nearby.length>1?`近接するGOAL ${nearby.length}件`:'GOAL';detail.replaceChildren(heading);
   nearby.forEach(({goal:g})=>{const row=document.createElement('button');row.type='button';row.textContent=title(g,now.record);row.onclick=event=>{event.stopPropagation();seek(g)};detail.append(row)});
+  // Measure away from the previous screen edge, then keep that width when moving.
+  detail.style.width='';detail.style.left='8px';
   detail.hidden=false;const r=button.getBoundingClientRect(),d=detail.getBoundingClientRect();
+  detail.style.width=d.width+'px';
   const panels=[...document.querySelectorAll('#tvMapDock,#labReactions,#labPosting,#labTimeline,#labMatchLog')].filter(e=>e.checkVisibility()).map(e=>e.getBoundingClientRect());
   const preferred=Math.max(8,Math.min(r.left,innerWidth-d.width-8));
   const xs=[preferred,8,innerWidth-d.width-8],ys=panels.flatMap(p=>[p.top-d.height-8,p.bottom+8]);

@@ -30,6 +30,11 @@ for(const [width,height]of [[1280,720],[1920,1080],[2500,928]]){
  // Same YouTube ID in two halves: half identity must still hide the first-half goals.
  await p.locator('.tab').nth(1).dispatchEvent('click');await p.waitForTimeout(180);assert.equal(await p.locator('.lab-goal-flag').count(),0);await load({...sample,half:'2nd',goals:[{no:1,sec:100.5,team:0,score:[1,0]}]});assert.equal(await p.locator('.lab-goal-flag').count(),1);
  await p.locator('.tab').nth(0).dispatchEvent('click');await p.waitForTimeout(180);assert.equal(await p.locator('.lab-goal-flag').count(),5);await load({...sample,youtube_id:'xxxxxxxxxxx'});assert.equal(await p.locator('.lab-goal-flag').count(),0);await load(sample);await p.waitForTimeout(120);
+ // The actual sample's longer scorer label must not grow after popup placement.
+ await p.evaluate(()=>{fake.duration=1641;draw(events)});await p.waitForTimeout(180);
+ await p.locator('.lab-goal-flag[data-no="4"]').focus();await p.locator('.lab-goal-flag[data-no="3"]').focus();await p.waitForTimeout(150);
+ const sampleOverlap=await p.locator('#labGoalDetail').evaluate(e=>{const r=e.getBoundingClientRect();return [...document.querySelectorAll('#tvMapDock,#labReactions,#labPosting,#labTimeline,#labMatchLog')].filter(p=>p.checkVisibility()).some(p=>{const z=p.getBoundingClientRect();return r.left<z.right&&r.right>z.left&&r.top<z.bottom&&r.bottom>z.top})});assert.equal(sampleOverlap,false);
+ await p.screenshot({path:out+'/sample-popup-'+width+'.png'});
  const grip=await p.locator('#labMapHandle').boundingBox();await p.mouse.move(grip.x+25,grip.y+12);await p.mouse.down();await p.mouse.move(grip.x-55,grip.y-58,{steps:8});await p.mouse.up();
  const resize=await p.locator('#labMapResize').boundingBox();await p.mouse.move(resize.x+13,resize.y+13);await p.mouse.down();await p.mouse.move(resize.x-77,resize.y+3,{steps:8});await p.mouse.up();await p.waitForTimeout(250);
  const movedErrors=await p.evaluate(()=>[...document.querySelectorAll('.lab-goal-flag')].map(e=>{const r=e.getBoundingClientRect(),c=chart.canvas.getBoundingClientRect();return Math.abs(r.left+r.width/2-(c.left+chart.scales.x.getPixelForValue(Number(e.dataset.sec))*c.width/chart.width))}));assert.ok(movedErrors.every(e=>e<.1));await p.screenshot({path:out+'/moved-resized-'+width+'.png'});
