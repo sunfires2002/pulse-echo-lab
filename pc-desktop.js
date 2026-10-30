@@ -12,7 +12,7 @@
  const styles=Promise.all((desktop?['pc-base.css','tv-view.css','pc-lab.css']:['tv-view.css']).map(path=>new Promise((resolve,reject)=>{
   const link=document.createElement('link');link.rel='stylesheet';link.href=path+'?v=1.2.0';link.onload=resolve;link.onerror=()=>reject(new Error('PC stylesheet unavailable: '+path));document.head.append(link);
  })));
- function script(path){return new Promise((resolve,reject)=>{const node=document.createElement('script');node.src=path+'?v=1.2.0';node.onload=resolve;node.onerror=()=>reject(new Error('PC script unavailable: '+path));document.body.append(node)})}
+ function script(path){return new Promise((resolve,reject)=>{const node=document.createElement('script');node.src=path+'?v=1.2.1';node.onload=resolve;node.onerror=()=>reject(new Error('PC script unavailable: '+path));document.body.append(node)})}
  document.addEventListener('DOMContentLoaded',async()=>{
   try{
    await styles;document.body.classList.add('match-page');
@@ -23,7 +23,7 @@
    toolbar.innerHTML='<button class="btn" id="tvNameOpen" type="button">名前：匿名</button><div id="tvNamePanel" hidden role="dialog" aria-label="投稿者名の設定"><label for="tvNameInput">投稿者名・背番号（例：横江、12）</label><input class="input" id="tvNameInput" autocomplete="nickname" maxlength="40" placeholder="個人名・家族名・グループ名"><button class="btn" id="tvNameSave" type="button">保存</button><button class="btn" id="tvNameCancel" type="button">閉じる</button><p id="tvStorageNotice" role="status"></p></div><div id="tvStatus" role="status" aria-live="polite"></div>';
    document.body.append(toolbar);
    await script('tv-view.js');
-   if(desktop){await script('pc-lab.js');document.getElementById('labReturn').textContent='PC鑑賞へ戻る'}
+   if(desktop){await script('pc-lab.js');await script('lab-goals-core.js');await script('lab-goals.js');document.getElementById('labReturn').textContent='PC鑑賞へ戻る'}
    window.PULSE_PC_READY=true;document.dispatchEvent(new Event('pulse-pc-ready'));
   }catch(error){console.error('[PULSE PC]',error);window.PULSE_PC_LOAD_ERROR=error.message}
  });

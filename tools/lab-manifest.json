@@ -20,7 +20,11 @@
     "lab-tools.js",
     "lab-entry.js",
     "lab-sample-events.js",
-    "assets/pulse-echo-icon.png"
+    "assets/pulse-echo-icon.png",
+    "lab-goals-core.js",
+    "lab-goals.js",
+    "lab-goals.css",
+    "fixtures/prism-goals-sample.json"
   ],
   "source": [
     "README.md",
@@ -33,6 +37,10 @@
     "tools/audit-bundle.py",
     "tests/lab-independent.cjs",
     "tests/lab-storage.cjs",
-    "tests/pulse-seconds.cjs"
+    "tests/pulse-seconds.cjs",
+    "GOAL-FLAGS.md",
+    "tests/goals-core.cjs",
+    "tests/goal-flags.cjs",
+    "tests/goals-youtube.cjs"
   ]
 }

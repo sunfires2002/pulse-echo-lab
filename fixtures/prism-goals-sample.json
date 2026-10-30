@@ -1,0 +1,17 @@
+{
+  "format": "prism-goals/1",
+  "match_id": "lab-sample-b",
+  "half": "1st",
+  "youtube_id": "dSIO3AdVRIs",
+  "video": "edit",
+  "source": "logger",
+  "teams": [{"name":"LAB TEAM A","color":"#00cec9"},{"name":"LAB TEAM B","color":"#ff9b50"}],
+  "kickoff_sec": 0.5,
+  "end_sec": 1639,
+  "goals": [
+    {"no":1,"sec":1.5,"team":0,"score":[1,0],"scorer":{"number":"07"}},
+    {"no":2,"sec":630,"team":1,"score":[1,1],"scorer":{"number":"10","name":"サンプル選手"}},
+    {"no":3,"sec":632.2,"team":0,"score":[2,1],"scorer":{"og":true}},
+    {"no":4,"sec":1638,"team":0,"score":[3,1]}
+  ]
+}

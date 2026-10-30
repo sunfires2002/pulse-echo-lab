@@ -56,12 +56,12 @@
   if(requirePlot&&(point.x<area.left-1||point.x>area.right+1||point.y<area.top-1||point.y>area.bottom+1))return null;
   return{...point,seconds:labChartXToSeconds(point.x),position:Math.max(0,Math.min(1,(point.x-area.left)/(area.right-area.left)))};
  }
- function labSeekSeconds(seconds){
+ function labSeekSeconds(seconds,exact=false){
   const duration=labDuration();if(!Number.isFinite(seconds))return false;
   if(duration<=0){pendingLabSeekSeconds=null;return false}
   seconds=Math.max(0,Math.min(duration,seconds));
   if(!playerReady||!player?.seekTo){pendingLabSeekSeconds=seconds;return false}
-  const target=Math.max(0,Math.min(Math.floor(seconds),Math.max(0,Math.ceil(duration)-1)));
+  const target=Math.max(0,Math.min(exact?seconds:Math.floor(seconds),exact?duration:Math.max(0,Math.ceil(duration)-1)));
   try{player.seekTo(target,true);pendingLabSeekSeconds=null;return true}catch{pendingLabSeekSeconds=seconds;return false}
  }
  function labPlaybackClick(){
@@ -118,6 +118,16 @@
  }
  labPlayheadKnob.addEventListener("pointerup",event=>{if(!active()||!labDrag||event.pointerId!==labDrag.id)return;event.preventDefault();event.stopPropagation();finishLabDrag(event,true)},true);
  labPlayheadKnob.addEventListener("pointercancel",event=>finishLabDrag(event,false),true);
+ // LAB-only adapter: flags and existing PULSE controls share the Chart.js scale.
+ window.PULSE_LAB_TIMELINE=Object.freeze({
+  context(){
+   const youtubeId=document.querySelector('.tab.active')?.dataset.video||'',half=currentPart==='前半'?'1st':currentPart==='後半'?'2nd':null;
+   const duration=labDuration(),ready=active()&&playerReady&&duration>0&&player?.getVideoData?.().video_id===youtubeId&&chart?.scales.x.type==='linear'&&Math.abs(chart.scales.x.max-duration)<.1;
+   return{active:active(),matchId:match?.id,half,youtubeId,duration,ready};
+  },
+  point(seconds){if(!this.context().ready||seconds<0||seconds>labDuration())return null;const area=chart.chartArea;return{...labChartPointToDock(labSecondsToChartX(seconds),area.bottom),height:area.height}},
+  seek(seconds){if(!this.context().ready||!Number.isFinite(seconds)||seconds<0||seconds>labDuration())return false;const ok=labSeekSeconds(seconds,true);labPulseUpdate();return ok}
+ });
  setInterval(labPulseUpdate,100);
  labCanvas.addEventListener("mousemove",event=>{
   if(!active()||labDrag)return;
@@ -196,10 +206,9 @@
  makePanel("labPosting","ECHO+",".controls",()=>innerHeight<800?[16,Math.max(56,Math.round(innerHeight*.1)),360,290]:[16,130,360,350],false,"声・ひとこと");
  makePanel("labTimeline","REACT",".timeline-card",()=>[innerWidth-316,56,300,240],false,"みんなの反応");
  const goalLog=document.createElement('section');goalLog.className='lab-only lab-goal-log';goalLog.innerHTML='<div class="lab-goal-warning">仮データ・仮配色</div><div class="lab-goal-list"></div>';body.append(goalLog);
- const goalRows=[{team:'SUNFIRES',n:1,home:1,away:0,color:'#00cec9'},{team:'8motion',n:1,home:1,away:1,color:'#ff9b50'},{team:'SUNFIRES',n:2,home:2,away:1,color:'#00cec9'},{team:'8motion',n:2,home:2,away:2,color:'#ff9b50'}];
- const goalList=goalLog.querySelector('.lab-goal-list');goalRows.forEach(row=>{const item=document.createElement('div');item.className='lab-goal-row';item.style.setProperty('--goal-color',row.color);item.innerHTML=`<strong>${row.team}</strong><span>GOAL ${['','①','②','③','④'][row.n]}</span><b>${row.home}–${row.away}</b>`;goalList.append(item)});
+ const goalList=goalLog.querySelector('.lab-goal-list');goalLog.querySelector('.lab-goal-warning').textContent='GOAL JSON未読込・LABO端末内だけ';
  goalLog.dataset.labPrototype='true';
- // The prototype panel is created only inside PC LAB; it has no jump or data-writing behavior.
+ // Existing MATCH LOG shell; the GOAL module supplies the shared normalized rows.
  const goalPanel=makePanel('labMatchLog','MATCH LOG','.lab-goal-log',()=>innerHeight<800?[16,Math.max(374,Math.round(innerHeight*.1)+310),340,160]:[16,510,340,260],false,'押すとゴールの場面へ');
  goalPanel.panel.dataset.mockOnly='true';
  document.getElementById("labReset").textContent="標準配置に戻す";

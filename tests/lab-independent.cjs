@@ -11,7 +11,7 @@ const out=process.env.LAB_EVIDENCE_DIR||path.join(process.cwd(),'lab-test-result
  const browser=await chromium.launch({channel:'chrome',headless:true,args:['--autoplay-policy=no-user-gesture-required']});
  const results=[];
  try{
- for(const viewport of [{width:1280,height:720},{width:2500,height:928}]){console.log('Checking viewport',viewport);
+ for(const viewport of [{width:1280,height:720},{width:2500,height:928}].filter(v=>!process.env.LAB_VIEWPORT_ONLY||v.width===Number(process.env.LAB_VIEWPORT_ONLY))){console.log('Checking viewport',viewport);
   const context=await browser.newContext({viewport,deviceScaleFactor:1});
   const productionRequests=[],productionSockets=[],errors=[];
   context.on('request',r=>{if(/supabase\.(co|com)/i.test(new URL(r.url()).hostname))productionRequests.push(r.url())});
@@ -36,7 +36,7 @@ const out=process.env.LAB_EVIDENCE_DIR||path.join(process.cwd(),'lab-test-result
   await page.waitForFunction(()=>typeof player!=='undefined'&&playerReady&&player?.getDuration?.()>0,null,{timeout:30000});
   assert.equal(new URL(page.url()).searchParams.get('mode'),'lab');
   const state=await page.evaluate(()=>({supa,config:PULSE_CONFIG,legacy:localStorage.getItem('pulse_echo_pc_lab_layout_v1'),lab:PULSE_LAB_STORAGE.getItem('pulse_echo_pc_lab_layout_v1'),oldName:localStorage.getItem('pulse_echo_user_name'),name:PULSE_PROFILE.getName(),count:events.length,icons:document.querySelectorAll('.lab-feature-icon').length,goal:!!document.querySelector('#labMatchLog'),duration:player.getDuration()}));
-  assert.equal(state.supa,null);assert.equal(state.config.supabaseUrl,'');assert.equal(state.legacy,JSON.stringify(legacy));assert.equal(state.lab,JSON.stringify(legacy));assert.equal(state.oldName,'PRODUCTION NAME');assert.notEqual(state.name,'PRODUCTION NAME');assert.equal(state.count,36);assert.equal(state.icons,5);assert.ok(state.goal);assert.equal(await page.locator('.lab-goal-row').count(),4);assert.equal(await page.locator('#labMatchLog').getAttribute('data-mock-only'),'true');assert.ok(await page.locator('#laboEnvironment').isVisible());assert.ok((await page.title()).includes('PULSE ECHO LABO'));
+  assert.equal(state.supa,null);assert.equal(state.config.supabaseUrl,'');assert.equal(state.legacy,JSON.stringify(legacy));assert.equal(state.lab,JSON.stringify(legacy));assert.equal(state.oldName,'PRODUCTION NAME');assert.notEqual(state.name,'PRODUCTION NAME');assert.equal(state.count,36);assert.equal(state.icons,5);assert.ok(state.goal);assert.equal(await page.locator('.lab-goal-row').count(),0);assert.equal(await page.locator('#labMatchLog').getAttribute('data-mock-only'),'true');assert.ok(await page.locator('#laboEnvironment').isVisible());assert.ok((await page.title()).includes('PULSE ECHO LABO'));
   // Actual playback, then coordinate-based click and drag, on the real player.
   await page.locator('#labPulsePlay').click();
   await page.waitForFunction(()=>player.getPlayerState()===1&&player.getCurrentTime()>0);
@@ -99,7 +99,10 @@ const out=process.env.LAB_EVIDENCE_DIR||path.join(process.cwd(),'lab-test-result
   // A different sample match keeps LAB mode, map, icons, local-only data and playback controls.
   await page.goto(base);await page.locator('.match-card').nth(1).waitFor();await page.locator('.match-card').nth(1).click();
   await page.waitForFunction(()=>window.PULSE_PC_READY&&document.body.classList.contains('lab-mode'));
-  assert.equal(await page.locator('.lab-feature-icon').count(),5);assert.equal(await page.locator('.lab-goal-row').count(),4);
+  assert.equal(await page.locator('.lab-feature-icon').count(),5);assert.equal(await page.locator('.lab-goal-row').count(),0);
+  // GOALs are opt-in: this synthetic fixture is scoped to lab-sample-b only.
+  await page.locator('#labMenuToggle').click();await page.locator('#labGoalTools summary').click();await page.locator('#labGoalSample').click();
+  try{await page.waitForFunction(()=>PULSE_LAB_GOALS.current().goals.length===4&&document.querySelectorAll('.lab-goal-row').length===4,null,{timeout:45000})}catch(error){console.log('GOAL sample diagnostic',await page.evaluate(()=>({context:PULSE_LAB_TIMELINE.context(),status:document.getElementById('labGoalStatus').textContent,record:PULSE_LAB_GOALS.current().record,ready:playerReady,video:player?.getVideoData?.(),duration:player?.getDuration?.()})));throw error};assert.equal(await page.locator('.lab-goal-row').count(),4);await page.locator('#labMenuToggle').click();
   assert.equal(await page.evaluate(()=>supa),null);assert.equal(new URL(page.url()).searchParams.get('mode'),'lab');
   // TV round trip stays entirely in the standalone LAB site.
   await page.evaluate(()=>PULSE_VIEW.setMode(true,'tv'));await page.locator('#tvHome').click();await page.waitForURL(u=>u.searchParams.get('mode')==='tv'&&u.pathname===new URL(base).pathname);await page.locator('.match-card').nth(1).click();await page.waitForFunction(()=>document.body.classList.contains('tv-mode'));

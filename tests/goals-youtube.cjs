@@ -1,0 +1,18 @@
+const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=require('node:fs/promises');
+const base=process.env.GOAL_TEST_URL||'http://127.0.0.1:8034/',out=process.env.GOAL_EVIDENCE_DIR;assert.ok(out&&['localhost','127.0.0.1'].includes(new URL(base).hostname));
+const sample=require('../fixtures/prism-goals-sample.json');
+(async()=>{await fs.mkdir(out,{recursive:true});const b=await chromium.launch({channel:'chrome',headless:true}),results=[],requests=[],errors=[];
+for(const id of ['Mx5IiSYW7T8','dSIO3AdVRIs','l3QQQu7QLoM']){
+ const c=await b.newContext({viewport:{width:1280,height:720}});await c.route(/supabase\.(co|com)/,r=>{requests.push(r.request().url());return r.abort()});await c.route('**/data.js',r=>r.fulfill({contentType:'application/javascript',body:`window.PULSE_MATCHES=[{id:'lab-sample-b',home:'LAB A',away:'LAB B',published:true,firstHalfVideo:'${id}',secondHalfVideo:'dSIO3AdVRIs'}];`}));const p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));await p.goto(base+'match.html?id=lab-sample-b');await p.waitForFunction(()=>window.PULSE_PC_READY&&playerReady&&player.getDuration()>0,null,{timeout:60000});const skip=p.getByRole('button',{name:'スキップ',exact:true});if(await skip.isVisible())await skip.click();await p.waitForFunction(()=>PULSE_LAB_TIMELINE.context().ready);
+ const duration=await p.evaluate(()=>player.getDuration());const goals=[{no:1,sec:1.5,team:0,score:[1,0],scorer:{number:'07'}},{no:2,sec:Math.floor(duration/2)+.4,team:1,score:[1,1]},{no:3,sec:Math.floor(duration/2)+.6,team:0,score:[2,1],scorer:{og:true}},{no:4,sec:duration-1.5,team:0,score:[3,1]}];
+ await p.locator('#labGoalFile').setInputFiles({name:'real-video-test.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({...sample,youtube_id:id,goals,end_sec:duration}))});await p.waitForFunction(()=>document.querySelectorAll('.lab-goal-flag').length===4);
+ await p.evaluate(()=>{window.goalSeeks=[];const original=player.seekTo.bind(player);player.seekTo=(t,a)=>{goalSeeks.push(t);return original(t,a)}});
+ const checks=[];for(const goal of [goals[0],goals[1],goals[3]]){
+  const flag=p.locator(`.lab-goal-flag[data-no="${goal.no}"]`);await flag.focus();await flag.press('Enter');assert.equal(await p.evaluate(()=>goalSeeks.at(-1)),goal.sec);await p.waitForFunction(t=>Math.abs(player.getCurrentTime()-t)<2,goal.sec,{timeout:20000});
+  // Check decoded playback too, then pause; API seek target is kept separately.
+  if(await p.evaluate(()=>player.getPlayerState())!==1)await p.locator('#labPulsePlay').click();await p.waitForFunction(()=>player.getPlayerState()===1,null,{timeout:25000});await p.waitForTimeout(300);await p.evaluate(()=>player.pauseVideo());await p.waitForTimeout(400);
+  const measurement=await p.evaluate(no=>{const node=document.querySelector(`.lab-goal-flag[data-no="${no}"]`),r=node.getBoundingClientRect(),canvas=chart.canvas.getBoundingClientRect(),g=PULSE_LAB_GOALS.current().goals.find(g=>g.no===no);return{target:g.sec,requested:goalSeeks.at(-1),actual:player.getCurrentTime(),pixelError:Math.abs(r.left+r.width/2-(canvas.left+chart.scales.x.getPixelForValue(g.sec)*canvas.width/chart.width))}},goal.no);assert.ok(measurement.pixelError<.1);assert.ok(Math.abs(measurement.actual-goal.sec)<3);checks.push(measurement);
+ }
+ await p.locator('.lab-goal-flag[data-no="2"]').focus();await p.screenshot({path:out+'/youtube-'+id+'.png'});results.push({id,duration,checks});await fs.writeFile(out+'/youtube-results.json',JSON.stringify({results,requests,errors},null,2));console.log('PASS real GOAL seek',id,duration);await c.close();
+}
+assert.deepEqual(requests,[]);assert.deepEqual(errors,[]);await b.close()})().catch(e=>{console.error(e);process.exit(1)});
