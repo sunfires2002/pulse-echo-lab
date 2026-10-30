@@ -1,14 +1,19 @@
-#labGoalFlags,#labGoalDetail,#labGoalTools{display:none}
-body.lab-mode #labGoalFlags{display:block;position:absolute;inset:0;pointer-events:none;z-index:2}
-#labGoalFlags[hidden],#labGoalDetail[hidden],#labGoalSample[hidden]{display:none!important}
-body.lab-mode #labGoalFlags .lab-goal-flag{position:absolute;width:18px;min-width:18px;height:18px;min-height:18px;transform:translateX(-50%);padding:0;border:0;background:rgba(8,10,16,.9);border-radius:3px;color:#ffd45c;font-size:17px;line-height:18px;pointer-events:auto;cursor:pointer}
-.lab-goal-flag:focus-visible{outline:2px solid #ffd45c;outline-offset:2px}
-body.lab-mode #labGoalDetail{display:block;position:fixed;z-index:105;max-width:min(420px,calc(100vw - 16px));max-height:40vh;overflow:auto;padding:10px;border:1px solid #ffd45c;border-radius:8px;background:#10141f;color:#fff;font-size:12px}
-#labGoalDetail button{display:block;width:100%;padding:8px;text-align:left;color:#fff;background:#222a38;border:1px solid #556078;border-radius:5px;margin-top:5px;cursor:pointer;overflow-wrap:anywhere}
+#labGoalArea,#labGoalTools{display:none}
+#labGoalArea[hidden],#labGoalSample[hidden],#labGoalTools [hidden]{display:none!important}
+/* Leave the original 48px canvas (plot + time axis) intact. Only details scroll. */
+body.tv-mode.lab-mode #tvMapDock .heatmap.info-panel{display:flex!important;flex-direction:column;min-height:96px}
+body.tv-mode.lab-mode #tvMapDock .heatmap-chart-wrap{flex:0 0 48px;height:48px;min-height:48px}
+body.tv-mode.lab-mode #labGoalArea{display:flex;flex:1 1 0;flex-direction:column;min-height:46px;min-width:0;gap:2px;margin-top:2px}
+body.lab-mode #labGoalFlags{display:block;position:relative;flex:0 0 20px;height:20px;min-width:0}
+body.lab-mode #labGoalFlags .lab-goal-flag{position:absolute;top:1px;width:18px;min-width:18px;height:18px;min-height:18px;transform:translateX(-50%);padding:0;border:0;background:rgba(8,10,16,.9);border-radius:3px;color:#ffd45c;font-size:17px;line-height:18px;cursor:pointer}
+.lab-goal-flag:focus-visible{outline:2px solid #ffd45c;outline-offset:1px}
+body.lab-mode #labGoalDetail{display:flex;flex:1 1 0;flex-wrap:wrap;align-content:flex-start;align-items:flex-start;gap:3px;min-height:24px;min-width:0;margin-right:28px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;font-size:11px;line-height:16px;color:#fff}
+#labGoalDetail strong{flex:0 0 auto;padding:2px 4px;color:#ffd45c;font-size:10px;font-weight:600}
+#labGoalDetail small{color:#aab4c7;font-size:10px;line-height:20px}
+#labGoalDetail button{max-width:100%;min-width:0;min-height:20px;padding:1px 5px;text-align:left;color:#fff;background:#222a38;border:1px solid #556078;border-radius:4px;font-size:11px;line-height:16px;white-space:normal;overflow-wrap:anywhere;cursor:pointer}
+#labGoalDetail button:focus-visible,#labGoalDetail:focus-visible{outline:1px solid #ffd45c;outline-offset:-1px}
 body.lab-mode #labGoalTools{display:block;max-width:460px;padding:8px;font-size:12px;pointer-events:auto}
 #labGoalTools summary{cursor:pointer}#labGoalTools p{margin:5px 0}#labGoalTools a{display:block;padding:5px;color:#a7f6ed}#labGoalTools input{max-width:100%}
 body.lab-mode .lab-goal-list button.lab-goal-row{display:block;width:100%;text-align:left;background:transparent;color:#fff;cursor:pointer;font-size:12px;white-space:normal;overflow-wrap:anywhere}
-body:not(.lab-mode) #labGoalFlags,body:not(.lab-mode) #labGoalDetail,body:not(.lab-mode) #labGoalTools{display:none!important}
-.lab-goal-flag[data-nearby]:not([data-nearby=""])::after{content:attr(data-nearby);position:absolute;right:-4px;top:-4px;min-width:10px;height:10px;line-height:10px;border-radius:5px;background:#ffd45c;color:#080a10;font-size:9px}
-
-#labGoalTools [hidden]{display:none!important}
+body:not(.lab-mode) #labGoalArea,body:not(.lab-mode) #labGoalTools{display:none!important}
+.lab-goal-flag[data-nearby]:not([data-nearby=""])::after{content:attr(data-nearby);position:absolute;right:-4px;top:0;min-width:10px;height:10px;line-height:10px;border-radius:5px;background:#ffd45c;color:#080a10;font-size:9px}

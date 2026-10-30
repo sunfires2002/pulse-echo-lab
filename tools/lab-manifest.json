@@ -41,6 +41,8 @@
     "GOAL-FLAGS.md",
     "tests/goals-core.cjs",
     "tests/goal-flags.cjs",
-    "tests/goals-youtube.cjs"
+    "tests/goals-youtube.cjs",
+    "GOAL-LANE.md",
+    "tests/goal-lane.cjs"
   ]
 }
