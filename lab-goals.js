@@ -17,7 +17,7 @@
  const link=document.createElement('a');link.href='match.html?id=lab-sample-b&mode=lab';link.textContent='GOAL検証用のサンプル試合';tools.append(link);
  const clear=document.createElement('button');clear.type='button';clear.className='btn';clear.textContent='GOALを解除';clear.onclick=()=>{loadNote='';store.clear()};tools.append(clear);
  const status=document.createElement('p');status.id='labGoalStatus';status.setAttribute('role','status');tools.append(status);menu.append(tools);
- let loadNote='',lastRecord=undefined,lastKey='',buttons=[],selectedGoal=null,closeTimer=null,touchSelected=false;
+ let loadNote='',lastRecord=undefined,lastKey='',buttons=[],selectedGoal=null,detailGroupKey='',closeTimer=null,touchSelected=false;
  const cancelClose=()=>{clearTimeout(closeTimer);closeTimer=null};
  function scheduleClose(){
   cancelClose();closeTimer=setTimeout(()=>{
@@ -41,15 +41,24 @@
  }
  function seek(goal){const now=current();return now.goals.includes(goal)&&timeline.seek(goal.sec)}
  function hide(){
-  cancelClose();touchSelected=false;selectedGoal=null;guide.hidden=true;detail.replaceChildren();detail.dataset.empty='true';
+  cancelClose();touchSelected=false;selectedGoal=null;detailGroupKey='';guide.hidden=true;detail.replaceChildren();detail.dataset.empty='true';
   const hint=document.createElement('small');hint.textContent='GOALにカーソルを合わせると詳細を表示';detail.append(hint);
  }
+ // Group targets plus badge clearance; the count never covers another ball.
+ function groups(){
+  const result=[];
+  for(const item of buttons.filter(b=>!b.node.hidden).map(b=>({...b,x:b.node.getBoundingClientRect().x})).sort((a,b)=>a.x-b.x)){
+   const last=result.at(-1);if(last&&item.x-last.at(-1).x<40)last.push(item);else result.push([item]);
+  }
+  return result;
+ }
+ function groupFor(button){return groups().find(group=>group.some(b=>b.node===button))||[]}
+ const groupKey=group=>group.map(b=>b.goal.no).join(',');
  function show(goal,button){
   const now=current();if(!now.goals.includes(goal))return;
-  cancelClose();if(selectedGoal===goal&&detail.dataset.empty==='false'){updateGuide();return}
-  selectedGoal=goal;document.getElementById('labTooltip').hidden=true;updateGuide();
-  const x=button.getBoundingClientRect().x;
-  const nearby=buttons.filter(b=>Math.abs(b.node.getBoundingClientRect().x-x)<24);
+  const nearby=groupFor(button),key=groupKey(nearby);
+  cancelClose();if(selectedGoal===goal&&detailGroupKey===key&&detail.dataset.empty==='false'){updateGuide();return}
+  selectedGoal=goal;detailGroupKey=key;document.getElementById('labTooltip').hidden=true;updateGuide();
   const heading=document.createElement('strong');heading.textContent=nearby.length>1?`近接するGOAL ${nearby.length}件`:'GOAL';detail.replaceChildren(heading);detail.dataset.empty='false';detail.scrollTop=0;
   nearby.forEach(({goal:g})=>{const row=document.createElement('button');row.type='button';row.textContent=title(g,now.record);row.onclick=event=>{event.stopPropagation();seek(g)};
    const mark=()=>{selectedGoal=g;updateGuide()};row.addEventListener('pointerenter',mark);row.addEventListener('focus',mark);detail.append(row)});
@@ -86,7 +95,10 @@
    });
   }
   const origin=layer.getBoundingClientRect(),panel=dock.getBoundingClientRect(),border=parseFloat(getComputedStyle(dock).borderLeftWidth)||0;
-  for(const {goal,node}of buttons){const point=timeline.point(goal.sec);node.hidden=!point;if(point){node.style.left=(panel.left+border+point.left-origin.left)+'px';const count=buttons.filter(b=>Math.abs((timeline.point(b.goal.sec)?.left??Infinity)-point.left)<24).length;node.dataset.nearby=count>1?String(count):''}}
+  for(const {goal,node}of buttons){const point=timeline.point(goal.sec);node.hidden=!point;node.dataset.nearby='';if(point)node.style.left=(panel.left+border+point.left-origin.left)+'px'}
+  for(const group of groups())if(group.length>1)group.at(-1).node.dataset.nearby=String(group.length);
+  const selected=buttons.find(b=>b.goal===selectedGoal);
+  if(selected&&detailGroupKey!==groupKey(groupFor(selected.node)))show(selectedGoal,selected.node);
   area.hidden=!context.active;updateGuide();
 
   status.textContent=[loadNote,record?(context.ready?`${goals.length}件表示${excluded?`・動画時間外${excluded}件は非表示`:''}`:'動画の長さを確認中…'):'対応するGOAL JSONは未読込'].filter(Boolean).join(' / ');

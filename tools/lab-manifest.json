@@ -44,6 +44,7 @@
     "tests/goals-youtube.cjs",
     "GOAL-LANE.md",
     "tests/goal-lane.cjs",
-    "tests/goal-hover.cjs"
+    "tests/goal-hover.cjs",
+    "tests/goal-size.cjs"
   ]
 }

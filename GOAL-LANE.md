@@ -1,5 +1,18 @@
 # LABO GOAL lane layout (candidate)
 
+## 22px size follow-up (2026-10-30 candidate)
+
+Base: published LABO main `95f69d9`; branch `codex/labo-goal-ball-size`. This section supersedes the18px ball sizing and24px grouping threshold in the historical notes below. No main integration or publication.
+
+- Ball type22px; actual button28×24px; lane24px. The previous2px margin above the lane and2px gap below it are absorbed by its4px growth. Lane center and detail top are unchanged; panel160/180/180px, canvas48px, plot19px and detail minimum24px are preserved. Focus outline is inset so it does not overlap the axis or details.
+- Only the LAB Chart.js options gain layout padding left16/right28px, top/bottom0. The right allowance includes the14px half-target and count badge. Chart.js also reserves its own label space; the padding does not change min0/maxDuration or enable offset. Balls, guide, playhead, hover, click and knob all keep using the very same live Chart.js seconds scale. No goal-only clamping or timestamp adjustment is added. TV/review options do not gain this padding.
+- A cluster's count badge is placed1px beyond its rightmost button, so it covers no ball. Grouping includes40px clearance for the28px target and badge; touching chains form one selection group. The detail list uses that same group and refreshes when resizing changes membership. Every ball stays at its exact second position, with individual goal selection in the detail area.
+- Autoclose260ms, touch/keyboard retention, scorer/07/OG, normalized shared MATCH LOG data, prism-goals/1, import lifetime and storage are unchanged.
+
+`tests/goal-size.cjs` compares the untouched main build against the candidate at1280×720,1920×1080,2500×928: sample,0/0.2s and1640.8/1641s endpoints, nearby2 and a3-goal chain, long scorer names and minimum420px panel width. It asserts22px/28×24px, badge clearance from all targets and canvas edges, complete axis, unchanged panel/canvas/plot/detail heights, and common ball/guide/playhead positions. Before/after screenshots and JSON are in the external task artifact `goal-size-review/compare`.
+
+Existing hover, touch/keyboard, inline lane/legacy-storage/dock-reload-split, actual YouTube goal seeking (1389/1641/3678s), regular PULSE and unchanged-device baseline suites also pass. Dedicated size/hover/lane suites report zero Supabase HTTP/WebSocket attempts and zero page errors. Real-video/PULSE suites report zero Supabase HTTP requests. Chrome/emulation evidence only; Safari, physical devices and cross-OS emoji rendering are unverified. No Fire TV GOAL UI is implemented. Cache keys: goal CSS/JS1.2.1, PC LAB script1.2.3, desktop loader1.2.5.
+
 Base: independent LABO main `db6a18f`. Branch: `codex/labo-goal-lane`. This supersedes the floating GOAL detail layout described in GOAL-FLAGS.md. No main merge or publication.
 
 ## GOAL ball interaction update (2026-10-30 candidate)

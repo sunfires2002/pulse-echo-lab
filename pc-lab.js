@@ -281,6 +281,9 @@
  // Configure before Chart constructs its plugin option descriptors.
  window.PULSE_PC_CHART_OPTIONS=options=>{
   const lab=active();options.maintainAspectRatio=!lab;
+  // Keep endpoint balls (14px half-target + 11px count badge) inside the canvas.
+  // Every graph/seek/marker uses this same Chart.js scale; never clamp GOAL x alone.
+  if(lab)options.layout={...options.layout,padding:{left:16,right:28,top:0,bottom:0}};
   options.plugins.tooltip={enabled:!lab,external:lab?tooltip:null,mode:lab?"index":"nearest",intersect:!lab};
  };
  document.getElementById("chart").addEventListener("mouseleave",()=>{tip.hidden=true;labHoverSeconds=null;labHoverLine.hidden=true});
